@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Portal de Noticias — Laboratorio 6{% endblock %}</title>
+    <!-- Carga de estilos estáticos según Requisito 10 -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Barra superior -->
+    <div class="top-bar">
+        <span>TECSUP &bull; Desarrollo de Aplicaciones Empresariales</span>
+        <span>{% now "l, j \d\e F \d\e Y" %}</span>
+    </div>
+
+    <!-- Encabezado y Navegación Principal -->
+    <header class="site-header">
+        <div class="nav-container">
+            <div class="logo-area">
+                <a href="{% url 'news:home' %}" class="logo-text">
+                    Portal<span>Noticias</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'news:home' %}">Portada</a></li>
+                    {% for cat in all_categories %}
+                    <li>
+                        <a href="{% url 'news:category_articles' cat.slug %}">
+                            {{ cat.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                    <li><a href="/admin/" target="_blank" class="admin-link">Panel Admin</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Estructura Principal: Bloque Contenido y Bloque Barra Lateral -->
+    <main class="main-wrapper">
+        <!-- Bloque Principal de Contenido -->
+        <section class="content-area">
+            {% block content %}
+            <!-- Contenido dinámico renderizado por cada plantilla hija -->
+            {% endblock %}
+        </section>
+
+        <!-- Bloque de Barra Lateral (Sidebar) -->
+        <aside class="sidebar-area">
+            {% block sidebar %}
+            <!-- Widget: Categorías -->
+            <div class="sidebar-widget">
+                <h3 class="widget-title">📁 Categorías</h3>
+                <ul class="category-list">
+                    {% for cat in all_categories %}
+                    <li>
+                        <a href="{% url 'news:category_articles' cat.slug %}">{{ cat.name }}</a>
+                        <span style="font-size: 0.8rem; color: #9ca3af;">({{ cat.articles.count }})</span>
+                    </li>
+                    {% empty %}
+                    <li>No hay categorías registradas</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Widget: Noticias Recientes -->
+            <div class="sidebar-widget">
+                <h3 class="widget-title">⏱ Noticias Recientes</h3>
+                <ul class="recent-news-list">
+                    {% for item in recent_articles %}
+                    <li class="recent-item">
+                        <a href="{% url 'news:article_detail' item.slug %}">{{ item.title }}</a>
+                        <div class="recent-date">{{ item.published_date|date:"d M, Y" }}</div>
+                    </li>
+                    {% empty %}
+                    <li>No hay noticias recientes.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Widget: Acerca del Portal -->
+            <div class="sidebar-widget">
+                <h3 class="widget-title">ℹ Acerca del Portal</h3>
+                <p style="font-size: 0.9rem; color: #4b5563; line-height: 1.5;">
+                    Plataforma desarrollada para el <strong>Laboratorio N° 6</strong>. Aplica herencia de plantillas, fragmentos modulares reutilizables y formateo avanzado con filtros nativos de Django.
+                </p>
+            </div>
+            {% endblock %}
+        </aside>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div>
+                <h4 style="color: white; margin-bottom: 0.4rem;">Portal de Noticias Empresariales</h4>
+                <p style="font-size: 0.9rem;">Laboratorio 6: Motor de plantillas con Django</p>
+            </div>
+            <div>
+                <p style="font-size: 0.9rem;"><strong>Estudiante:</strong> Israel Angel Huaman Huaman</p>
+                <p style="font-size: 0.9rem;"><strong>Docente:</strong> Michael Montgomery Rosell</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; {% now "Y" %} Tecsup - Sección 4-C24-A. Todos los derechos reservados.
+        </div>
+    </footer>
+
+</body>
+</html>

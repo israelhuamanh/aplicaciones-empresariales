@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Categoría: {{ category.name }} — Portal de Noticias{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem; background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+    <div style="font-size: 0.85rem; text-transform: uppercase; font-weight: 700; color: var(--accent); margin-bottom: 0.3rem;">
+        Categoría
+    </div>
+    <h1 style="font-size: 1.8rem; font-weight: 800; color: #111827; margin-bottom: 0.5rem;">
+        {{ category.name }}
+    </h1>
+    {% if category.description %}
+        <p style="color: #4b5563; font-size: 0.95rem;">{{ category.description }}</p>
+    {% endif %}
+</div>
+
+<!-- Requisito 8: Listado por categoría reutilizando el mismo fragmento _article_card.html -->
+<div class="articles-stream">
+    {% for article in articles %}
+        {% include "news/_article_card.html" with article=article %}
+    {% empty %}
+        <div style="background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 3rem; text-align: center; color: #6b7280;">
+            <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">No hay noticias registradas en esta categoría.</p>
+            <p><a href="{% url 'news:home' %}" style="color: var(--primary); font-weight: 600;">&larr; Volver a la portada</a></p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

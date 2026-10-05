@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} — Portal de Noticias{% endblock %}
+
+{% block content %}
+<article class="article-detail-box">
+    <!-- Migas de pan / Navegación -->
+    <div style="margin-bottom: 1.2rem; font-size: 0.85rem; color: #6b7280;">
+        <a href="{% url 'news:home' %}">Portada</a> &raquo;
+        {% for cat in article.categories.all %}
+            <a href="{% url 'news:category_articles' cat.slug %}">{{ cat.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Categorías -->
+    <div class="card-categories">
+        {% for cat in article.categories.all %}
+            <a href="{% url 'news:category_articles' cat.slug %}" class="badge-category">
+                {{ cat.name }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Título principal -->
+    <h1 class="article-headline">{{ article.title }}</h1>
+
+    <!-- Copete / Resumen -->
+    <p class="article-lead">{{ article.summary }}</p>
+
+    <!-- Ficha del Autor y Fecha -->
+    <div class="author-meta-box">
+        {% if article.author.avatar %}
+            <img src="{{ article.author.avatar.url }}" alt="{{ article.author.name }}" class="author-avatar" style="object-fit:cover;">
+        {% else %}
+            <div class="author-avatar">
+                {{ article.author.name|make_list|first }}
+            </div>
+        {% endif %}
+        <div>
+            <div style="font-weight: 700; color: #111827;">{{ article.author.name }}</div>
+            <div style="font-size: 0.85rem; color: #6b7280;">
+                Publicado el {{ article.published_date|date:"j \d\e F \d\e Y" }} a las {{ article.published_date|time:"H:i" }} hrs.
+            </div>
+            {% if article.author.bio %}
+                <div style="font-size: 0.8rem; color: #4b5563; margin-top: 0.2rem;">{{ article.author.bio }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Imagen destacada si existe -->
+    {% if article.featured_image %}
+        <div style="margin-bottom: 2rem; border-radius: 8px; overflow: hidden;">
+            <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" style="width: 100%; max-height: 450px; object-fit: cover;">
+        </div>
+    {% endif %}
+
+    <!-- Requisito 12: Demostración de Escapado Automático (Autoescape) -->
+    <!-- Por defecto en Django: {{ article.content|linebreaks }} escapa cualquier etiqueta HTML insegura (<script>, <b>, etc.) -->
+    <div class="article-body">
+        {{ article.content|linebreaks }}
+    </div>
+
+    <!-- Enlace de retorno -->
+    <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+        <a href="{% url 'news:home' %}" style="font-weight: 600; color: var(--primary);">
+            &larr; Volver al listado de noticias
+        </a>
+    </div>
+</article>
+{% endblock %}

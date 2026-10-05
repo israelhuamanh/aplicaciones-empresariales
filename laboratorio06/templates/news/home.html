@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Portada — Portal de Noticias Empresariales{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 1.8rem; font-weight: 800; color: #111827; margin-bottom: 0.4rem;">
+        Últimas Noticias y Actualidad
+    </h1>
+    <p style="color: #6b7280; font-size: 1rem;">
+        Artículos destacados sobre tecnología, innovación y negocios.
+    </p>
+</div>
+
+<!-- Requisito 6: Recorrer las noticias con for y mostrar caso sin resultados con empty -->
+<div class="articles-stream">
+    {% for article in articles %}
+        <!-- Requisito 5: Inclusión del fragmento reutilizable _article_card.html -->
+        {% include "news/_article_card.html" with article=article %}
+    {% empty %}
+        <div style="background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 3rem; text-align: center; color: #6b7280;">
+            <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">No hay noticias publicadas en este momento.</p>
+            <p style="font-size: 0.95rem;">Puedes dar de alta nuevas noticias desde el panel administrativo de Django.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

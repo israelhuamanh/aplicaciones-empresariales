@@ -1,0 +1,53 @@
+{# Fragmento reutilizable de tarjeta de noticia (_article_card.html) #}
+{# Aplica filtros de fecha (|date) y recorte al resumen (|truncatewords) #}
+<article class="article-card">
+    {% if article.featured_image %}
+        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" class="card-img">
+    {% else %}
+        <div class="card-img-placeholder">
+            📰
+        </div>
+    {% endif %}
+
+    <div class="card-content">
+        <!-- Categorías del artículo -->
+        <div class="card-categories">
+            {% for cat in article.categories.all %}
+                <a href="{% url 'news:category_articles' cat.slug %}" class="badge-category">
+                    {{ cat.name }}
+                </a>
+            {% empty %}
+                <span class="badge-category" style="background:#f3f4f6; color:#6b7280;">General</span>
+            {% endfor %}
+        </div>
+
+        <!-- Título -->
+        <h2 class="card-title">
+            <a href="{% url 'news:article_detail' article.slug %}">
+                {{ article.title }}
+            </a>
+        </h2>
+
+        <!-- Metadatos: Autor y Fecha formateada -->
+        <div class="card-meta">
+            <span>✍ {{ article.author.name }}</span>
+            <span>&bull;</span>
+            <span>📅 {{ article.published_date|date:"j \d\e F \d\e Y" }}</span>
+        </div>
+
+        <!-- Resumen con filtro de recorte -->
+        <p class="card-summary">
+            {{ article.summary|truncatewords:25 }}
+        </p>
+
+        <!-- Pie de tarjeta con enlace a detalle -->
+        <div class="card-footer">
+            <a href="{% url 'news:article_detail' article.slug %}" class="read-more">
+                Leer noticia completa &rarr;
+            </a>
+            <small style="color: #9ca3af; font-size: 0.75rem;">
+                Publicado a las {{ article.published_date|time:"H:i" }}
+            </small>
+        </div>
+    </div>
+</article>
