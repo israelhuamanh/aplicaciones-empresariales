@@ -1,0 +1,146 @@
+{% extends "movies/base.html" %}
+
+{% block title %}{{ movie.title }} — CineManager{% endblock %}
+
+{% block extra_head %}
+<style>
+    .detail-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 2rem;
+    }
+    .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .back-link:hover {
+        text-decoration: underline;
+    }
+    .detail-title {
+        font-size: 2.2rem;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+    }
+    .detail-subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.2rem;
+        margin-bottom: 1.8rem;
+        padding: 1.2rem;
+        background: #f8fafc;
+        border-radius: 8px;
+    }
+    .meta-item strong {
+        display: block;
+        color: #475569;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+    .ratings-section {
+        margin-top: 2rem;
+    }
+    .rating-item {
+        background: #f8fafc;
+        border-left: 4px solid #f59e0b;
+        padding: 1rem 1.4rem;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 1rem;
+    }
+    .rating-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.4rem;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'movies:recommendations' %}" class="back-link">&larr; Volver a recomendaciones</a>
+
+<div class="detail-card">
+    <h1 class="detail-title">{{ movie.title }}</h1>
+    {% if movie.original_title %}
+        <p class="detail-subtitle">Título original: <em>{{ movie.original_title }}</em></p>
+    {% endif %}
+
+    <div class="meta-grid">
+        <div class="meta-item">
+            <strong>Año de estreno</strong>
+            <span>{{ movie.release_year }}</span>
+        </div>
+        <div class="meta-item">
+            <strong>Duración</strong>
+            <span>{% if movie.duration_minutes %}{{ movie.duration_minutes }} minutos{% else %}No especificada{% endif %}</span>
+        </div>
+        <div class="meta-item">
+            <strong>Director(a)</strong>
+            <span>{% if movie.director %}{{ movie.director }}{% else %}No especificado{% endif %}</span>
+        </div>
+        <div class="meta-item">
+            <strong>Calificación Promedio</strong>
+            <span>
+                {% if movie.average_rating %}
+                    ⭐ <strong>{{ movie.average_rating }} / 10</strong> ({{ movie.total_ratings }} valoraciones)
+                {% else %}
+                    Sin valoraciones
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        <strong style="display:block; margin-bottom: 0.5rem; color: #475569;">Géneros:</strong>
+        {% for genre in movie.genres.all %}
+            <span class="badge" style="font-size: 0.85rem; margin-right: 0.3rem;">{{ genre.name }}</span>
+        {% empty %}
+            <span>Sin género asignado</span>
+        {% endfor %}
+    </div>
+
+    {% if movie.cast.all %}
+    <div style="margin-bottom: 1.5rem;">
+        <strong style="display:block; margin-bottom: 0.5rem; color: #475569;">Reparto principal:</strong>
+        <p>
+            {% for actor in movie.cast.all %}
+                {{ actor }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+    </div>
+    {% endif %}
+
+    <div style="margin-bottom: 2rem;">
+        <strong style="display:block; margin-bottom: 0.5rem; color: #475569;">Sinopsis:</strong>
+        <p style="font-size: 1.05rem; line-height: 1.7; color: #334155;">{{ movie.synopsis }}</p>
+    </div>
+
+    <div class="ratings-section">
+        <h3 style="margin-bottom: 1rem; color: #0f172a;">Valoraciones y Críticas</h3>
+        {% for rating in movie.ratings.all %}
+        <div class="rating-item">
+            <div class="rating-header">
+                <strong>{{ rating.author }}</strong>
+                <span class="score-badge">⭐ {{ rating.score }}/10</span>
+            </div>
+            {% if rating.comment %}
+                <p style="color: #475569; font-size: 0.95rem;">"{{ rating.comment }}"</p>
+            {% endif %}
+            <small style="color: #94a3b8; font-size: 0.75rem;">Publicado el {{ rating.created_at|date:"d/m/Y H:i" }}</small>
+        </div>
+        {% empty %}
+        <p style="color: #64748b; font-style: italic;">No hay valoraciones registradas para esta película aún.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

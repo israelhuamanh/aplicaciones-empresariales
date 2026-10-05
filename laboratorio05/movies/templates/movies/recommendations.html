@@ -1,0 +1,206 @@
+{% extends "movies/base.html" %}
+
+{% block title %}Películas Mejor Valoradas — CineManager{% endblock %}
+
+{% block extra_head %}
+<style>
+    .hero {
+        background: linear-gradient(135deg, #1e3a8a, #0f172a);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .hero h2 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    .hero p {
+        color: #94a3b8;
+        max-width: 750px;
+    }
+    .genre-filter-bar {
+        background: white;
+        padding: 1.2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        align-items: center;
+    }
+    .genre-filter-bar span {
+        font-weight: 600;
+        margin-right: 0.5rem;
+        color: #475569;
+    }
+    .genre-pill {
+        display: inline-block;
+        padding: 0.4rem 0.9rem;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #475569;
+        background-color: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        transition: all 0.2s ease;
+    }
+    .genre-pill:hover {
+        background-color: #e2e8f0;
+        color: #0f172a;
+    }
+    .genre-pill.active {
+        background-color: #1e3a8a;
+        color: white;
+        border-color: #1e3a8a;
+    }
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+    .movie-card {
+        background: white;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .movie-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+    .card-body {
+        padding: 1.4rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .card-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.3rem;
+        color: #0f172a;
+    }
+    .card-title a {
+        text-decoration: none;
+        color: inherit;
+    }
+    .card-title a:hover {
+        color: #2563eb;
+    }
+    .card-meta {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 0.8rem;
+    }
+    .card-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
+    }
+    .card-synopsis {
+        font-size: 0.9rem;
+        color: #475569;
+        margin-bottom: 1.2rem;
+        flex: 1;
+    }
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 0.8rem;
+        margin-top: auto;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 10px;
+        color: #64748b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h2>🌟 Vista Pública de Recomendaciones</h2>
+    <p>Películas mejor valoradas por la crítica y los usuarios, organizadas y filtrables por género cinematográfico. Esta vista demuestra el consumo de modelos relacionales y agregaciones del ORM de Django.</p>
+</div>
+
+<!-- Filtros por Género -->
+<div class="genre-filter-bar">
+    <span>Filtrar por Género:</span>
+    <a href="{% url 'movies:recommendations' %}" class="genre-pill {% if not selected_genre %}active{% endif %}">
+        Todos los Géneros
+    </a>
+    {% for genre in genres %}
+    <a href="{% url 'movies:recommendations' %}?genre={{ genre.id }}"
+       class="genre-pill {% if selected_genre.id == genre.id %}active{% endif %}">
+        {{ genre.name }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Título de sección activa -->
+<h3 style="margin-bottom: 1.2rem; color: #1e293b;">
+    {% if selected_genre %}
+        Películas del género: <span style="color: #2563eb;">{{ selected_genre.name }}</span> (Ordenadas por mejor puntuación)
+    {% else %}
+        Top Recomendaciones Globales
+    {% endif %}
+</h3>
+
+<!-- Grid de Películas -->
+{% if recommended_movies %}
+<div class="movie-grid">
+    {% for movie in recommended_movies %}
+    <div class="movie-card">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a href="{% url 'movies:movie_detail' movie.id %}">{{ movie.title }}</a>
+            </h4>
+            <div class="card-meta">
+                Año: <strong>{{ movie.release_year }}</strong> 
+                {% if movie.duration_minutes %}&bull; {{ movie.duration_minutes }} min{% endif %}
+                {% if movie.director %}&bull; Dir: {{ movie.director }}{% endif %}
+            </div>
+
+            <div class="card-genres">
+                {% for genre in movie.genres.all %}
+                <span class="badge">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
+
+            <p class="card-synopsis">{{ movie.synopsis|truncatewords:28 }}</p>
+
+            <div class="card-footer">
+                {% if movie.avg_rating %}
+                <div class="score-badge">
+                    ⭐ <strong>{{ movie.avg_rating|floatformat:1 }}/10</strong>
+                    <span style="font-size: 0.75rem; color: #78350f;">({{ movie.rating_count }} voto{{ movie.rating_count|pluralize:"s" }})</span>
+                </div>
+                {% else %}
+                <span style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">Sin valoraciones aún</span>
+                {% endif %}
+
+                <a href="{% url 'movies:movie_detail' movie.id %}" style="font-size: 0.875rem; color: #2563eb; text-decoration: none; font-weight: 600;">Ver detalle &rarr;</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <h3>No se encontraron películas para este género.</h3>
+    <p>Puedes agregar más títulos desde el panel administrativo de Django.</p>
+</div>
+{% endif %}
+{% endblock %}

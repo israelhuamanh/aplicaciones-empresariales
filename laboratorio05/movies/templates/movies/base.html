@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CineManager — Laboratorio 5{% endblock %}</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-hover: #1e40af;
+            --accent: #f59e0b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f1f5f9;
+            color: #334155;
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--dark);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--accent);
+        }
+        header h1 {
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+        }
+        .nav-links a {
+            margin-left: 1.2rem;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: white;
+        }
+        .admin-btn {
+            background: #2563eb;
+            padding: 0.4rem 0.9rem;
+            border-radius: 6px;
+            color: white !important;
+            font-weight: 500;
+        }
+        .admin-btn:hover {
+            background: #1d4ed8;
+        }
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+        .score-badge {
+            background-color: #fef3c7;
+            color: #92400e;
+            font-weight: 700;
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            color: var(--gray);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'movies:recommendations' %}">🎬 CineManager — Lab 5</a></h1>
+        <nav class="nav-links">
+            <a href="{% url 'movies:recommendations' %}">Recomendaciones</a>
+            <a href="/admin/" target="_blank" class="admin-btn">Panel Django Admin</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p><strong>Laboratorio 5: Administrador con Django</strong> — Desarrollo de Aplicaciones Empresariales (Tecsup 4-C24-A)</p>
+        <p>Modelos: Movie, Genre, Person, Rating | Panel Django Admin con auditoría y valoraciones en línea</p>
+    </footer>
+</body>
+</html>
